@@ -9,8 +9,9 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "@koa/cors": "2",
+    "@koa/cors": "^2.2.2",
     "koa": "^2.6.2",
+    "koa-mongo": "^1.5.0",
     "koa-router": "^7.4.0"
   },
   "devDependencies": {
