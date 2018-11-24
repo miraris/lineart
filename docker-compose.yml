@@ -1,17 +1,39 @@
 version: "3.7"
 
-# TODO: separate networks
+# TODO: swarm mode (docker stack deploy)
 
 services:
+  traefik:
+    image: traefik
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - web
+      - default
+
   mongo:
     image: mongo
 
   worker:
-    image: miraris/lineart-worker:latest
-    env_file: 
+    image: miraris/lineart-worker
+    env_file:
       - worker.env
+    depends_on:
+      - mongo
 
   api:
-    image: miraris/lineart-api:latest
-    ports:
-      - "3000:3000"
+    image: miraris/lineart-api
+    depends_on:
+      - mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=3000"
+    networks:
+      - web
+      - default
+
+networks: 
+  web:
+    external: true

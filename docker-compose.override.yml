@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+  traefik:
+    command:
+      - --api
+      - --docker
+      - --docker.exposedByDefault=false
+      - --logLevel=DEBUG
+    ports:
+      - "8080:8080"
+
+  api:
+    labels:
+      - "traefik.frontend.rule=Host:api.lineart.localhost"

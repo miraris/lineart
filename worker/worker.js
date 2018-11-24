@@ -62,16 +62,17 @@ const order = (arr) => {
           }
         });
 
-        // console.log(pixels.length);
-
         if (pixels.length > 10e4) return undefined;
 
-        // TODO: maybe spawn another worker here?
-        // or idk
+        // TODO: better algorithm for sorting nearby pixels
         pixels = order(pixels);
-        // console.log(pixels.length);
 
-        return { score: m.score, rating: m.rating, data: JSON.stringify(pixels) };
+        return {
+          imageId: m.id,
+          score: m.score,
+          rating: m.rating,
+          data: JSON.stringify(pixels),
+        };
       })
       .catch(err => console.error(err));
 

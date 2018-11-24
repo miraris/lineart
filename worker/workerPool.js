@@ -12,12 +12,11 @@ const pool = new Pool({ max: WORKERS });
 process.setMaxListeners(0);
 
 (async () => {
-  const url = 'mongodb://mongo';
-  const client = new MongoClient(url, { useNewUrlParser: true });
-
+  const client = new MongoClient('mongodb://mongo', { useNewUrlParser: true });
   await client.connect();
+
   const db = client.db('lineart');
-  await db.collection('images').createIndex({ score: 1, rating: 1 });
+  await db.collection('images').createIndex({ imageId: 1, score: 1, rating: 1 }, { unique: true });
 
   let page = 1;
 
@@ -28,13 +27,7 @@ process.setMaxListeners(0);
         { json: true },
       );
 
-      const { length } = response.body;
-
-      if (!length) {
-        client.close();
-        pool.destroy();
-        break;
-      }
+      if (!response.body.length) break;
 
       // for (const piece of chunk(response.body, Math.max(length / WORKERS))) {
 
@@ -50,8 +43,10 @@ process.setMaxListeners(0);
 
         worker.on('message', (imgs) => {
           if (!imgs.val) return;
-          console.log(`Done in ${imgs.timeDiff}s`);
-          db.collection('images').updateOne(imgs.val, imgs.val, { upsert: true });
+          console.log(`Done in ${imgs.timeDiff / 10e2}s | id: ${imgs.val.imageId}`);
+          db.collection('images')
+            .insertOne(imgs.val)
+            .catch(() => {});
         });
       });
 
@@ -63,4 +58,12 @@ process.setMaxListeners(0);
       break;
     }
   }
+
+  // check pool length every 10 seconds, exit once it's empty
+  setInterval(() => {
+    if (pool._queue.length !== 0) return;
+
+    client.close();
+    pool.destroy();
+  }, 10e3);
 })();
