@@ -1,5 +1,4 @@
 /* eslint no-await-in-loop: 0, no-loop-func: 0 */
-require('events').EventEmitter.prototype._maxListeners = 200;
 
 const Pool = require('worker-threads-pool');
 const got = require('got');
@@ -18,6 +17,23 @@ process.setMaxListeners(0);
   const db = client.db('lineart');
   await db.collection('images').createIndex({ imageId: 1, score: 1, rating: 1 }, { unique: true });
 
+  const handler = (err, worker) => {
+    if (err) throw err;
+    console.log(`worker spawned (pool size: ${pool.size})`);
+
+    worker.on('exit', () => {
+      console.log(`worker exited (pool size: ${pool.size})`);
+    });
+
+    worker.on('message', (imgs) => {
+      if (!imgs.val) return;
+      console.log(`Done in ${imgs.timeDiff / 10e2}s | id: ${imgs.val.imageId}`);
+      db.collection('images')
+        .insertOne(imgs.val)
+        .catch(() => {});
+    });
+  };
+
   let page = 1;
 
   while (1) {
@@ -33,22 +49,7 @@ process.setMaxListeners(0);
 
       // idk whether there's a need to chunk here since a worker can just work on it's own page
       // still memory leaks for some reason because of a large queue?
-      pool.acquire('./worker.js', { workerData: response.body }, (err, worker) => {
-        if (err) throw err;
-        console.log(`worker spawned (pool size: ${pool.size})`);
-
-        worker.on('exit', () => {
-          console.log(`worker exited (pool size: ${pool.size})`);
-        });
-
-        worker.on('message', (imgs) => {
-          if (!imgs.val) return;
-          console.log(`Done in ${imgs.timeDiff / 10e2}s | id: ${imgs.val.imageId}`);
-          db.collection('images')
-            .insertOne(imgs.val)
-            .catch(() => {});
-        });
-      });
+      pool.acquire('./worker.js', { workerData: response.body }, handler);
 
       page++;
     } catch (error) {
