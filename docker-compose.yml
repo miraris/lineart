@@ -1,21 +1,17 @@
 version: "3.7"
 
+# TODO: separate networks
+
 services:
   mongo:
     image: mongo
-    env_file:
-      - mongo.env
-    secrets:
-      - mongo-root-username
-      - mongo-root-password
 
   worker:
     image: miraris/lineart-worker:latest
-    env_file:
-      - mongo.env
+    env_file: 
+      - worker.env
 
-secrets:
-  mongo-root-username:
-    external: true
-  mongo-root-password:
-    external: true
+  api:
+    image: miraris/lineart-api:latest
+    ports:
+      - "3000:3000"

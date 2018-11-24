@@ -3,19 +3,16 @@ require('events').EventEmitter.prototype._maxListeners = 200;
 
 const Pool = require('worker-threads-pool');
 const got = require('got');
-// const { readFileSync } = require('fs');
 const { MongoClient } = require('mongodb');
-const chunk = require('./chunk');
 
 const WORKERS = Number(process.env.WORKERS) || 5;
 
-// const secret = fs.readFileSync('/run/secrets/mongo-root', 'utf8');
 const pool = new Pool({ max: WORKERS });
 
 process.setMaxListeners(0);
 
 (async () => {
-  const url = 'mongodb://localhost';
+  const url = 'mongodb://mongo';
   const client = new MongoClient(url, { useNewUrlParser: true });
 
   await client.connect();
@@ -54,7 +51,7 @@ process.setMaxListeners(0);
         worker.on('message', (imgs) => {
           if (!imgs.val) return;
           console.log(`Done in ${imgs.timeDiff}s`);
-          db.collection('images').update(imgs.val, imgs.val, { upsert: true });
+          db.collection('images').updateOne(imgs.val, imgs.val, { upsert: true });
         });
       });
 

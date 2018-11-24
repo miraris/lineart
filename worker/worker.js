@@ -43,7 +43,7 @@ const order = (arr) => {
 
     const val = await Jimp.read(m.file_url)
       .then((image) => {
-        const pixels = [];
+        let pixels = [];
 
         if (image.bitmap.width > 800) {
           image = image.resize(800, Jimp.AUTO);
@@ -66,7 +66,9 @@ const order = (arr) => {
 
         if (pixels.length > 10e4) return undefined;
 
-        // pixels = order(pixels);
+        // TODO: maybe spawn another worker here?
+        // or idk
+        pixels = order(pixels);
         // console.log(pixels.length);
 
         return { score: m.score, rating: m.rating, data: JSON.stringify(pixels) };
