@@ -1,0 +1,11 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Miraris <miraris@autistici.org> (https://miraris.moe)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "koa": "^2.6.2"
+  }
+}

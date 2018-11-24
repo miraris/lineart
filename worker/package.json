@@ -1,0 +1,17 @@
+{
+  "name": "worker",
+  "version": "1.0.0",
+  "main": "workerPool.js",
+  "author": "Miraris <miraris@autistici.org> (https://miraris.moe)",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node --experimental-worker workerPool.js"
+  },
+  "dependencies": {
+    "got": "^9.3.2",
+    "jimp": "^0.5.6",
+    "mongodb": "^3.1.10",
+    "worker-threads-pool": "^2.0.0"
+  }
+}
