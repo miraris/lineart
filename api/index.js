@@ -13,7 +13,7 @@ router.get('/', async (ctx) => {
   const r = Math.floor(Math.random() * n);
 
   ctx.body = await coll
-    .find()
+    .find({ rating: { $eq: 's' } })
     .limit(1)
     .skip(r)
     .toArray();
