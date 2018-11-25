@@ -1,5 +1,6 @@
 const Koa = require('koa');
 const cors = require('@koa/cors');
+const compress = require('koa-compress');
 const Router = require('koa-router');
 const mongo = require('koa-mongo');
 
@@ -7,7 +8,7 @@ const app = new Koa();
 const router = new Router();
 
 router.get('/', async (ctx) => {
-  // const coll = ;
+  ctx.compress = true;
 
   ctx.body = await ctx.mongo
     .db('lineart')
@@ -18,6 +19,7 @@ router.get('/', async (ctx) => {
 
 app
   .use(mongo({ uri: 'mongodb://mongo' }))
+  .use(compress())
   .use(cors({ origin: '*' }))
   .use(router.routes())
   .use(router.allowedMethods());
