@@ -35,7 +35,9 @@ const order = (arr) => {
 };
 
 (async () => {
-  const images = workerData.filter(m => m.file_url && m.score > 9 && m.rating !== 'e' && imageRegex.test(m.file_url));
+  const images = workerData.filter(
+    m => m.file_url && m.score > 9 && m.rating === 's' && imageRegex.test(m.file_url),
+  );
 
   for (const m of images) {
     const start = Date.now();
@@ -51,8 +53,8 @@ const order = (arr) => {
           image = image.resize(Jimp.AUTO, 800);
         }
 
-        let minX;
-        let minSet = false;
+        let minX = Infinity;
+        let minY;
 
         image.scan(0, 0, image.bitmap.width, image.bitmap.height, function scan(x, y, idx) {
           const red = this.bitmap.data[idx + 0];
@@ -60,18 +62,29 @@ const order = (arr) => {
           const blue = this.bitmap.data[idx + 2];
 
           if (red <= 230 && green <= 230 && blue <= 230) {
-            if (minSet === false) {
-              minX = x;
-              minSet = true;
-            }
+            if (x < minX) minX = x;
+            if (minY === undefined) minY = y;
 
-            pixels.push([x - minX, y]);
+            pixels.push([x, y]);
           }
         });
 
-        if (pixels.length > 10e4) return undefined;
+        const { length } = pixels;
 
-        // TODO: better algorithm for sorting nearby pixels
+        if (length > 10e4) return undefined;
+
+        /*
+         * TODO: better algorithm for sorting nearby pixels
+         * Also, this might be better off inside order() since
+         * we're already iterating over the whole array there
+         */
+        for (let i = 0; i < length; i++) {
+          const pixel = pixels[i];
+
+          pixel[0] -= minX;
+          pixel[1] -= minY;
+        }
+
         pixels = order(pixels);
 
         return {
