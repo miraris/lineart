@@ -56,10 +56,11 @@ const pool = new Pool({ max: WORKERS });
   }
 
   // check pool length every 10 seconds, exit once it's empty
-  setInterval(() => {
+  const queueCheck = setInterval(() => {
     if (pool._queue.length !== 0) return;
 
     client.close();
     pool.destroy();
+    clearInterval(queueCheck);
   }, 10e3);
 })();
