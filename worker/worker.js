@@ -36,23 +36,15 @@ const order = (arr) => {
 
 (async () => {
   const images = workerData.filter(
-    m => m.file_url && m.score > 9 && m.rating === 's' && imageRegex.test(m.file_url),
+    m => m.large_file_url && m.score > 11 && m.rating === 's' && imageRegex.test(m.large_file_url),
   );
 
   for (const m of images) {
     const start = Date.now();
 
-    const val = await Jimp.read(m.file_url)
+    const val = await Jimp.read(m.large_file_url)
       .then((image) => {
         let pixels = [];
-
-        if (image.bitmap.width > 800) {
-          image = image.resize(800, Jimp.AUTO);
-        }
-        if (image.bitmap.height > 800) {
-          image = image.resize(Jimp.AUTO, 800);
-        }
-
         let minX = Infinity;
         let minY;
 
@@ -71,7 +63,7 @@ const order = (arr) => {
 
         const { length } = pixels;
 
-        if (length > 10e4) return undefined;
+        if (!length || length > 10e4) return undefined;
 
         /*
          * TODO: better algorithm for sorting nearby pixels

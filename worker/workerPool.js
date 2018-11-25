@@ -5,10 +5,7 @@ const got = require('got');
 const { MongoClient } = require('mongodb');
 
 const WORKERS = Number(process.env.WORKERS) || 5;
-
 const pool = new Pool({ max: WORKERS });
-
-process.setMaxListeners(0);
 
 (async () => {
   const client = new MongoClient('mongodb://mongo', { useNewUrlParser: true });
@@ -44,8 +41,6 @@ process.setMaxListeners(0);
       );
 
       if (!response.body.length) break;
-
-      // for (const piece of chunk(response.body, Math.max(length / WORKERS))) {
 
       // idk whether there's a need to chunk here since a worker can just work on it's own page
       // still memory leaks for some reason because of a large queue?
