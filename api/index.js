@@ -7,15 +7,12 @@ const app = new Koa();
 const router = new Router();
 
 router.get('/', async (ctx) => {
-  const coll = await ctx.mongo.db('lineart').collection('images');
+  // const coll = ;
 
-  const n = await coll.estimatedDocumentCount();
-  const r = Math.floor(Math.random() * n);
-
-  ctx.body = await coll
-    .find({ rating: { $eq: 's' } })
-    .limit(1)
-    .skip(r)
+  ctx.body = await ctx.mongo
+    .db('lineart')
+    .collection('images')
+    .aggregate([{ $match: { rating: 's' } }, { $sample: { size: 1 } }])
     .toArray();
 });
 
