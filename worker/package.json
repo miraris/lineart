@@ -9,6 +9,7 @@
     "start": "node --experimental-worker workerPool.js"
   },
   "dependencies": {
+    "gm": "^1.23.1",
     "got": "^9.3.2",
     "jimp": "^0.5.6",
     "mongodb": "^3.1.10",

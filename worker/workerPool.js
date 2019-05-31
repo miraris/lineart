@@ -33,10 +33,10 @@ const pool = new Pool({ max: WORKERS });
 
   let page = 1;
 
-  while (1) {
+  for (;;) {
     try {
       const response = await got(
-        `https://danbooru.donmai.us/posts.json?tags=lineart&limit=200&page=${page}`,
+        `https://danbooru.donmai.us/posts.json?limit=200&page=${page}`,
         { json: true },
       );
 
