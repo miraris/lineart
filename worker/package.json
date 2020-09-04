@@ -12,7 +12,7 @@
     "gm": "^1.23.1",
     "got": "^9.3.2",
     "jimp": "^0.5.6",
-    "mongodb": "^3.1.10",
+    "mongodb": "^3.1.13",
     "worker-threads-pool": "^2.0.0"
   },
   "devDependencies": {
