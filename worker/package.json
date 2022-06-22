@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "gm": "^1.23.1",
-    "got": "^9.3.2",
+    "got": "^11.8.5",
     "jimp": "^0.5.6",
     "mongodb": "^3.1.10",
     "worker-threads-pool": "^2.0.0"
